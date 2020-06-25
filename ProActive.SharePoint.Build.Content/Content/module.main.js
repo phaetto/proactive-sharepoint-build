@@ -22,11 +22,11 @@ define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], functi
         webPartClass.prototype.render = function () {
             this.domElement.innerHTML = " "; // Important: must always have something
 
-            (function () {
+            (function (webPart) {
                 try {
                     {{__CODE__}}
                 } catch (e) { console.error(e); };
-            })();
+            })(this);
         };
 
         return webPartClass;

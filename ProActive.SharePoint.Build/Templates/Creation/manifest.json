@@ -2,7 +2,7 @@
   "id": "{{__GuidId__}}",
   "alias": "{{__NAME__}}WebPart",
   "componentType": "WebPart",
-  "version": "0.0.1",
+  "version": "{{__VERSION__}}",
   "manifestVersion": 2,
   "requiresCustomScript": false,
   "supportedHosts": [

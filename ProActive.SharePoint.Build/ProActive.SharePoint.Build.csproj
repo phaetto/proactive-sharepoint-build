@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Authors>Alexander Mantzoukas (ama@proactive.dk)</Authors>
+    <Company>ProActive A/S</Company>
+    <Product>ProActive Tooling</Product>
+    <Description>Provides the tools to scaffold SPFx components without using nodejs.
+This gives the freedom to inject any kind of script in an SPFx without a framework (or packing a framework of your choice)</Description>
+    <Copyright>ProActive A/S, 2020</Copyright>
+    <RepositoryUrl>https://github.com/phaetto/proactive-sharepoint-build</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>SPFx, tooling, SharePoint</PackageTags>
+    
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.1.0</Version>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\module.application-customizer.main.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\module.webpart.main.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Creation\AppManifest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -18,13 +38,25 @@
     <None Update="Templates\Creation\ClientSideAssets.xml.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Creation\Extension\Elements.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Creation\Extension\ClientSideInstance.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Creation\feature_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Creation\feature_ID.xml.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\Creation\manifest_extension.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\Creation\manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Creation\Extension\Extension_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Creation\WebPart\WebPart_ID.xml">
@@ -33,7 +65,7 @@
     <None Update="Templates\Creation\[Content_Types].xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Creation\_rels\.rels">
+    <None Update="Templates\Creation\_rels\dot_rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Creation\_rels\AppManifest.xml.rels">

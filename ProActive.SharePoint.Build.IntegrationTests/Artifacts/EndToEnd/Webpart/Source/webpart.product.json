@@ -1,0 +1,24 @@
+{
+  "SharePointProduct": {
+    "GuidId": "FF7A432A-7104-4B06-9A49-B17749AE2DD0",
+    "Name": "Integration tests SPFx",
+    "Version": "0.0.0.2"
+  },
+  "SharePointWebParts": [
+    {
+      "GuidId": "8A230D27-A741-4213-9E9F-33F6043DA690",
+      "Title": "Test WebPart #1",
+      "Description": "Test WebPart #1",
+      "Version": "0.0.0.1",
+      "EntryPointFileName": "index.js"
+    },
+    {
+      "GuidId": "8727AD75-22C6-4C29-B700-59E72C3D2490",
+      "Title": "Test WebPart #2",
+      "Description": "Test WebPart #2",
+      "Version": "0.0.0.1",
+      "EntryPointFileName": "index-2.js"
+    }
+  ],
+  "SharePointApplicationCustomizers": []
+}

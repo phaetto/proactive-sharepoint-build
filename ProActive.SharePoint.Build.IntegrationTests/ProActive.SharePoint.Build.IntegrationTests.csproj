@@ -19,14 +19,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Proactive.SharePoint.Build\ProActive.SharePoint.Build.csproj" />
+    <ProjectReference Include="..\ProActive.SharePoint.Build\ProActive.SharePoint.Build.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Artifacts\EndToEnd\Source\webpart.product.json">
+    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\index-2.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Artifacts\EndToEnd\Target\empty-file.txt">
+    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\index.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\webpart.product.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Target\empty-file.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Webpart\Source\index-2.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Webpart\Source\index.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Webpart\Source\webpart.product.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Webpart\Target\empty-file.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

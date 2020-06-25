@@ -294,4 +294,4 @@ dist/
 workbench-packages/
 /*.sspkg
 
-CustomSolutions/
+!ProActive.SharePoint.Build.IntegrationTests/Artifacts

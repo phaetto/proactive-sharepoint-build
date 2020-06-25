@@ -17,28 +17,16 @@ define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], functi
             return _super !== null && _super.apply(this, arguments) || this;
         }
 
-        console.log("WEBPART: Loaded");
-
         __extends(webPartClass, _super);
 
-        webPartClass.prototype.onDisplayModeChanged = function (oldDisplay) {
-            console.log('WEBPART: onDisplayModeChanged / Old: ' + oldDisplay);
-        }
-
         webPartClass.prototype.render = function () {
-            this.domElement.innerHTML = "Test WebPart (Id: " + thins.instanceId + ")"; // Important: must always have something
+            this.domElement.innerHTML = " "; // Important: must always have something
 
-            if (this.renderedOnce) {
-                // Special
-            }
-
-            console.log("WEBPART: InstanceID: " + this.instanceId);
-            console.log("WEBPART: Render");
-        };
-
-        webPartClass.prototype.onCustomPropertyChange = function(property, newValue) {
-            this.properties[property] = newValue;
-            this.render();
+            (function (webPart) {
+                try {
+                    {{__CODE__}}
+                } catch (e) { console.error(e); };
+            })(this);
         };
 
         return webPartClass;

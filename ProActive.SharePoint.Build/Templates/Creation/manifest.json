@@ -1,0 +1,43 @@
+{
+  "id": "{{__GuidId__}}",
+  "alias": "{{__NAME__}}WebPart",
+  "componentType": "WebPart",
+  "version": "0.0.1",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart"
+  ],
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Other"
+      },
+      "title": {
+        "default": "{{__Title__}}"
+      },
+      "description": {
+        "default": "{{__Description__}}"
+      },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+      }
+    }
+  ],
+  "loaderConfig": {
+    "entryModuleId": "{{__NAME__}}-web-part",
+    "internalModuleBaseUrls": [ "HTTPS://SPCLIENTSIDEASSETLIBRARY/" ],
+    "scriptResources": {
+      "{{__NAME__}}-web-part": {
+        "type": "path",
+        "path": "{{__FILENAME__}}"
+      },
+      "@microsoft/sp-webpart-base": {
+        "type": "component",
+        "version": "1.9.1",
+        "id": "974a7777-0990-4136-8fa6-95d80114c2e0"
+      }
+    }
+  }
+}

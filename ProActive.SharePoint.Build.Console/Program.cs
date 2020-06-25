@@ -48,7 +48,8 @@
 
                     Console.WriteLine("Creating artifacts...");
 
-                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, targetFolder, applicationLoadContext);
+                    // TODO: move content to argument
+                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, targetFolder, Path.GetFullPath(Path.Combine(".", "Content")),  applicationLoadContext);
                     copyFilesToSpfxFolder.Process();
                     ConsoleExtensions.WriteLineWithColor("Done!", ConsoleColor.Green);
 
@@ -65,6 +66,7 @@
                 })
                 .WithNotParsed(errs =>
                 {
+                    // TODO: errs
                     ConsoleExtensions.WriteLineWithColor("Invalid arguments.", ConsoleColor.Yellow);
                 });
         }

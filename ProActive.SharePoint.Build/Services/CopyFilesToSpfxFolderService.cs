@@ -3,7 +3,6 @@
     using System;
     using System.IO;
     using System.Xml;
-    using System.Text.Json;
     using System.Linq;
     using System.Text.RegularExpressions;
     using ProActive.SharePoint.Build.Services.Strings;
@@ -14,19 +13,19 @@
     {
         private readonly string sourceFolder;
         private readonly string spfxOutputFolder;
-        private readonly string webAssemblyFolder;
+        private readonly string contentTemplateFilesFolder;
         private readonly ApplicationLoadContext applicationLoadContext;
 
         public CopyFilesToSpfxFolderService(
             string sourceFolder,
             string spfxOutputFolder,
-            string webAssemblyFolder,
+            string contentTemplateFilesFolder,
             ApplicationLoadContext applicationLoadContext
         )
         {
             this.sourceFolder = sourceFolder;
             this.spfxOutputFolder = spfxOutputFolder;
-            this.webAssemblyFolder = webAssemblyFolder;
+            this.contentTemplateFilesFolder = contentTemplateFilesFolder;
             this.applicationLoadContext = applicationLoadContext;
         }
 
@@ -34,7 +33,9 @@
         {
             // Get all source files
             var sourceFiles = Directory.EnumerateFiles(sourceFolder, "*.*", SearchOption.AllDirectories)
-                .Where(x => Path.HasExtension(x));
+                .Where(x => Path.HasExtension(x))
+                .Where(x => !x.Equals(Files.WebPartProduct, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => applicationLoadContext.SharePointWebParts.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
 
             // Find the product ID
             var appManifestXml = new XmlDocument();
@@ -72,30 +73,31 @@
             var count = 1;
             foreach (var file in sourceFilesArray)
             {
-                CopyFileAndAddToXmlRel(relationshipsNode, productID, clientSideAssetsXml, count, sourceFolder, file);
+                CopyFileAndAddToXmlRel(relationshipsNode, clientSideAssetsXml, count, file);
 
                 ++count;
             }
 
             ProcessCssFiles(sourceFolder, sourceFilesArray);
 
-            //foreach (var attributeAndType in applicationLoadContext.SharePointWebPartAttributesAndTypes)
-            //{
-            //    // TODO: We should have the file entry before
-            //    ProcessJsMainModuleFile(relationshipsNode, productID, clientSideAssetsXml, count, contentTemplateFilesFolder, Path.Combine(contentTemplateFilesFolder, "module.client.js"), attributeAndType);
+            // TODO: Can't all entrypoints be like index.js? Do we have to provide the name?
+            foreach (var webPart in applicationLoadContext.SharePointWebParts)
+            {
+                ProcessJsMainModuleFile(relationshipsNode, clientSideAssetsXml, count, contentTemplateFilesFolder, Path.Combine(sourceFolder, webPart.EntryPointFileName), webPart);
 
-            //    ++count;
-            //}
+                ++count;
+            }
+
 
             clientSideAssetsXml.PreserveWhitespace = true;
             clientSideAssetsXml.Save(clientSideAssetsFileFullPath);
         }
 
-        private string CopyFileAndAddToXmlRel(XmlNode relationshipsNode, Guid productID, XmlDocument clientSideAssetsXml, int idCount, string rootDirectory, string file, string targetFilename = null)
+        private string CopyFileAndAddToXmlRel(XmlNode relationshipsNode, XmlDocument clientSideAssetsXml, int idCount, string file, string targetFilename = null)
         {
             if (string.IsNullOrWhiteSpace(targetFilename))
             {
-                targetFilename = EscapeFile(Path.GetRelativePath(rootDirectory, file));
+                targetFilename = EscapeFile(Path.GetRelativePath(sourceFolder, file));
             }
             var newFilePath = Path.Combine(spfxOutputFolder, "ClientSideAssets", targetFilename);
 
@@ -105,7 +107,7 @@
             var newNode = clientSideAssetsXml.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
             newNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/clientsideasset");
             newNode.SetAttribute("Target", $"/ClientSideAssets/{targetFilename}");
-            //newNode.SetAttribute("Id", string.Format(Paths.IdFormatPattern, idCount));
+            newNode.SetAttribute("Id", $"rel{idCount}");
             relationshipsNode.AppendChild(newNode);
             return newFilePath;
         }
@@ -134,39 +136,42 @@
             }
         }
 
-        private void ProcessJsMainModuleFile(XmlNode relationshipsNode, Guid productID, XmlDocument clientSideAssetsXml, int count, string rootDirectory, string file, in SharePointWebPart sharePointWebPart)
+        private void ProcessJsMainModuleFile(XmlNode relationshipsNode, XmlDocument clientSideAssetsXml, int count, string contentTemplateFilesFolder, string entrypointFileName, in SharePointWebPart sharePointWebPart)
         {
-            var fileContent = File.ReadAllText(file);
+            var mainModuleFileName = Path.Combine(contentTemplateFilesFolder, "module.main.js");
+            var entryPointfileContent = File.ReadAllText(entrypointFileName);
+            var mainModuleFileContent = File.ReadAllText(mainModuleFileName);
             var sanitizedName = TextManipulation.ToPascalCase(sharePointWebPart.Title);
             // TODO: use JSON schema to genrate the classes
-            fileContent = fileContent
+            mainModuleFileContent = mainModuleFileContent
                 .Replace("{{__GUID_ID__}}", sharePointWebPart.GuidId)
                 .Replace("{{__VERSION__}}", sharePointWebPart.Version)
-                .Replace("{{__NAME__}}", sanitizedName);
+                .Replace("{{__NAME__}}", sanitizedName)
+                .Replace("{{__CODE__}}", entryPointfileContent);
 
-            var newFileName = $"{sanitizedName}_{applicationLoadContext.UniqueBuildString}.js";
-            var newFilePath = CopyFileAndAddToXmlRel(relationshipsNode, productID, clientSideAssetsXml, count, rootDirectory, file, newFileName);
-            File.WriteAllText(newFilePath, fileContent);
+            var newFileName = $"{Path.GetFileNameWithoutExtension(sharePointWebPart.EntryPointFileName)}_{applicationLoadContext.UniqueBuildString}.js";
+            var newFilePath = CopyFileAndAddToXmlRel(relationshipsNode, clientSideAssetsXml, count, entrypointFileName, newFileName);
+            File.WriteAllText(newFilePath, mainModuleFileContent);
         }
 
-        private string EscapeFile(string file)
+        private string EscapeFile(string fileName)
         {
-            var extension = Path.GetExtension(file);
+            var extension = Path.GetExtension(fileName);
             if (extension == ".dll")
             {
                 /*
                  * Blazor in SPFx fix:
                  * Dll names must be the same as they loaded from URI because mono is loading them and we cannot rename them before it does
                  */
-                return Path.GetFileName(file);
+                return Path.GetFileName(fileName);
             }
 
-            var directory = Path.GetDirectoryName(file);
+            var directory = Path.GetDirectoryName(fileName);
             if (!string.IsNullOrEmpty(directory))
             {
                 directory += "_";
             }
-            var fileWithoutExtension = $"{directory}{Path.GetFileNameWithoutExtension(file)}";
+            var fileWithoutExtension = $"{directory}{Path.GetFileNameWithoutExtension(fileName)}";
             return fileWithoutExtension.Replace(Path.DirectorySeparatorChar, '_')
                 + extension;
         }

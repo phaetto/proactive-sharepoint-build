@@ -119,7 +119,7 @@
                 .Replace("{{__GuidId__}}", webPart.GuidId)
                 .Replace("{{__Title__}}", webPart.Title)
                 .Replace("{{__Description__}}", webPart.Description)
-                .Replace("{{__FILENAME__}}", $"{sanitizedName}_{applicationLoadContext.UniqueBuildString}.js")
+                .Replace("{{__FILENAME__}}", $"{Path.GetFileNameWithoutExtension(webPart.EntryPointFileName)}_{applicationLoadContext.UniqueBuildString}.js")
                 .Replace("{{__NAME__}}", sanitizedName)
                 .Replace("\n", "")
                 .Replace("\r", "")

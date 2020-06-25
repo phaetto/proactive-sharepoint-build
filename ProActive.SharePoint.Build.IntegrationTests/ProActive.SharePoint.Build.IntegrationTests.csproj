@@ -19,10 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProActive.SharePoint.Build.Content\ProActive.SharePoint.Build.Content.csproj" />
     <ProjectReference Include="..\Proactive.SharePoint.Build\ProActive.SharePoint.Build.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Artifacts\EndToEnd\Source\index-2.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Source\index.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Artifacts\EndToEnd\Source\webpart.product.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

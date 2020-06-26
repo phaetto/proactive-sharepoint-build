@@ -24,7 +24,7 @@ namespace ProActive.SharePoint.Build.IntegrationTests
         }
 
         [Fact]
-        public void Process_Simple_EndToEnd()
+        public void Process_WhenRunningTheWholeProcess_ThenItDoesNotFail()
         {
             var initSpfxFolderStructureService = new InitSpfxFolderStructureService(SourceFolder, OutputFolder);
             var applicationLoadContext = initSpfxFolderStructureService.Process();
@@ -32,9 +32,6 @@ namespace ProActive.SharePoint.Build.IntegrationTests
             createSpfxFolderStructureService.Process();
             var copyFilesToSpfxFolderService = new CopyFilesToSpfxFolderService(SourceFolder, OutputFolder, BuildContentFolder, applicationLoadContext);
             copyFilesToSpfxFolderService.Process();
-
-            applicationLoadContext.ShouldNotBeNull();
-            applicationLoadContext.SharePointWebParts.Length.ShouldBe(2);
         }
     }
 }

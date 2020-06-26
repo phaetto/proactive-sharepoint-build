@@ -37,19 +37,11 @@
                 .Where(x => !x.Equals(Files.WebPartProduct, StringComparison.InvariantCultureIgnoreCase))
                 .Where(x => applicationLoadContext.SharePointWebParts.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
 
-            // Find the product ID
-            var appManifestXml = new XmlDocument();
-            appManifestXml.Load($"{spfxOutputFolder}{Path.DirectorySeparatorChar}{Files.AppManifest}");
-            var xmlnsManager = new XmlNamespaceManager(appManifestXml.NameTable);
-            xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/2012/app/manifest");
-            var productIDAttributeNode = appManifestXml.SelectSingleNode("/ns:App/@ProductID", xmlnsManager);
-            var productID = Guid.Parse(productIDAttributeNode.Value);
-
             // Open the client-side-assets xml file
             var clientSideAssetsXml = new XmlDocument();
             var clientSideAssetsFileFullPath = $"{spfxOutputFolder}{Path.DirectorySeparatorChar}{Paths.ClientSideAssetsFile}";
             clientSideAssetsXml.Load(clientSideAssetsFileFullPath);
-            xmlnsManager = new XmlNamespaceManager(clientSideAssetsXml.NameTable);
+            var xmlnsManager = new XmlNamespaceManager(clientSideAssetsXml.NameTable);
             xmlnsManager.AddNamespace("ns", "http://schemas.openxmlformats.org/package/2006/relationships");
             var relationshipsNode = clientSideAssetsXml.SelectSingleNode("/ns:Relationships", xmlnsManager);
 

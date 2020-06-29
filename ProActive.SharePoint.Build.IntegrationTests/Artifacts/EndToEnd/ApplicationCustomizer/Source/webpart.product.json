@@ -1,0 +1,17 @@
+{
+  "SharePointProduct": {
+    "GuidId": "66e122a2-a305-4f55-a5b8-cd86a92007f0",
+    "Name": "Integration tests SPFx ApplicationCustomizer",
+    "Version": "0.0.0.2"
+  },
+  "SharePointWebParts": [],
+  "SharePointApplicationCustomizers": [
+    {
+      "GuidId": "f71d3857-0058-4f2e-b61f-a6965581c6c3",
+      "Title": "Test AppCust #1",
+      "Description": "Test AppCust #1",
+      "Version": "0.0.0.1",
+      "EntryPointFileName": "index.js"
+    }
+  ]
+}

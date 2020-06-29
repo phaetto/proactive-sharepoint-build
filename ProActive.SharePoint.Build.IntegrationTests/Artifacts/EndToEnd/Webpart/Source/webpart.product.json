@@ -2,7 +2,7 @@
   "SharePointProduct": {
     "GuidId": "FF7A432A-7104-4B06-9A49-B17749AE2DD0",
     "Name": "Integration tests SPFx",
-    "Version": "0.0.0.1"
+    "Version": "0.0.0.2"
   },
   "SharePointWebParts": [
     {
@@ -19,5 +19,6 @@
       "Version": "0.0.0.1",
       "EntryPointFileName": "index-2.js"
     }
-  ]
+  ],
+  "SharePointApplicationCustomizers": []
 }

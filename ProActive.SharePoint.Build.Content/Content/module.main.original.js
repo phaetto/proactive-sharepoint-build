@@ -26,7 +26,7 @@ define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], functi
         }
 
         webPartClass.prototype.render = function () {
-            this.domElement.innerHTML = "Test WebPart (Id: " + thins.instanceId + ")"; // Important: must always have something
+            this.domElement.innerHTML = "Test WebPart (Id: " + this.instanceId + ")"; // Important: must always have something
 
             if (this.renderedOnce) {
                 // Special

@@ -2,7 +2,7 @@
 
 namespace ProActive.SharePoint.Build.Services.Contracts
 {
-    public sealed class SharePointWebPart : ISharePointEntryData
+    public sealed class SharePointApplicationCustomizer : ISharePointEntryData
     {
         public string GuidId { get; set; }
         public string Title { get; set; }

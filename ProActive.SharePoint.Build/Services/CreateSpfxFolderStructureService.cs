@@ -66,6 +66,44 @@
                     jsonManifest);
             }
 
+            foreach (var applicationCustomizer in applicationLoadContext.SharePointApplicationCustomizers)
+            {
+                var jsonManifest = GenerateManifestJson(applicationCustomizer, Path.Combine(creationTemplateFolder, "manifest_extension.json"));
+
+                // Setup features
+                var featureXmlFilePath = Path.Combine(spfxOutputFolder, $"feature_{applicationCustomizer.GuidId}.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "feature_ID.xml"), featureXmlFilePath);
+                SetupFeatureXmlFile(applicationLoadContext.SharePointProduct, applicationCustomizer, featureXmlFilePath);
+
+                var featureXmlConfigXmlFilePath = Path.Combine(spfxOutputFolder, $"feature_{applicationCustomizer.GuidId}.xml.config.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "feature_ID.xml.config.xml"), featureXmlConfigXmlFilePath);
+                SetupFeatureXmlConfigFile(featureXmlConfigXmlFilePath);
+
+                // Setup Extension folder
+                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, applicationCustomizer.GuidId);
+                Directory.CreateDirectory(webPartOutputDirectory);
+                var webPartFilePath = Path.Combine(webPartOutputDirectory, $"Extension_{applicationCustomizer.GuidId}.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "Extension", "Extension_ID.xml"), webPartFilePath);
+                SetupWebpartFile(
+                    applicationCustomizer,
+                    webPartFilePath,
+                    jsonManifest);
+
+                Directory.CreateDirectory(webPartOutputDirectory);
+                var clientSideInstanceFilePath = Path.Combine(webPartOutputDirectory, $"ClientSideInstance.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "Extension", "ClientSideInstance.xml"), clientSideInstanceFilePath);
+                SetupClientSideInstanceFile(
+                    applicationCustomizer,
+                    clientSideInstanceFilePath);
+
+                Directory.CreateDirectory(webPartOutputDirectory);
+                var elementsFilePath = Path.Combine(webPartOutputDirectory, $"Elements.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "Extension", "Elements.xml"), elementsFilePath);
+                SetupElementsFile(
+                    applicationCustomizer,
+                    elementsFilePath);
+            }
+
             // Setup .rels folder
             var relsOutputDirectory = Path.Combine(spfxOutputFolder, "_rels");
             Directory.CreateDirectory(relsOutputDirectory);
@@ -82,13 +120,23 @@
 
             var idCount = 1;
             var appManifestXmlFilePath = Path.Combine(relsOutputDirectory, "AppManifest.xml.rels");
-            foreach (var webPartAttribute in applicationLoadContext.SharePointWebParts)
+            foreach (var webPart in applicationLoadContext.SharePointWebParts)
             {
-                var featureRelsXmlFilePath = Path.Combine(relsOutputDirectory, $"feature_{webPartAttribute.GuidId}.xml.rels");
+                var featureRelsXmlFilePath = Path.Combine(relsOutputDirectory, $"feature_{webPart.GuidId}.xml.rels");
                 File.Copy(Path.Combine(creationTemplateFolder, "_rels", "feature_ID.xml.rels"), featureRelsXmlFilePath);
-                SetupRelsFeatureXmlFile(webPartAttribute, featureRelsXmlFilePath, idCount);
+                SetupRelsFeatureXmlFile(webPart, featureRelsXmlFilePath, idCount, ClientSideType.WebPart);
 
-                AddEntryToAppManifestXmlFile(webPartAttribute, appManifestXmlFilePath, $"rel{idCount}");
+                AddEntryToAppManifestXmlFile(webPart, appManifestXmlFilePath, $"rel{idCount}");
+                ++idCount;
+            }
+
+            foreach (var applicationCustomizer in applicationLoadContext.SharePointApplicationCustomizers)
+            {
+                var featureRelsXmlFilePath = Path.Combine(relsOutputDirectory, $"feature_{applicationCustomizer.GuidId}.xml.rels");
+                File.Copy(Path.Combine(creationTemplateFolder, "_rels", "feature_ID.xml.rels"), featureRelsXmlFilePath);
+                SetupRelsFeatureXmlFile(applicationCustomizer, featureRelsXmlFilePath, idCount, ClientSideType.ApplicationCustomizer);
+
+                AddEntryToAppManifestXmlFile(applicationCustomizer, appManifestXmlFilePath, $"rel{idCount}");
                 ++idCount;
             }
 
@@ -111,7 +159,7 @@
             xmlDocument.Save(filePath);
         }
 
-        private string GenerateManifestJson(SharePointWebPart webPart, string templateFilePath)
+        private string GenerateManifestJson(ISharePointEntryData webPart, string templateFilePath)
         {
             var manifestFileContents = File.ReadAllText(templateFilePath);
             var sanitizedName = TextManipulation.ToPascalCase(webPart.Title);
@@ -121,6 +169,7 @@
                 .Replace("{{__Description__}}", webPart.Description)
                 .Replace("{{__FILENAME__}}", $"{Path.GetFileNameWithoutExtension(webPart.EntryPointFileName)}_{applicationLoadContext.UniqueBuildString}.js")
                 .Replace("{{__NAME__}}", sanitizedName)
+                .Replace("{{__VERSION__}}", webPart.Version)
                 .Replace("\n", "")
                 .Replace("\r", "")
                 .Trim();
@@ -128,7 +177,7 @@
         }
 
         private void SetupWebpartFile(
-            SharePointWebPart webPart,
+            ISharePointEntryData webPart,
             string filePath,
             string jsonComponentManifest)
         {
@@ -141,14 +190,14 @@
             node.SetAttribute("Name", webPart.Title);
             node.SetAttribute("ComponentManifest", jsonComponentManifest);
             var moduleNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:Module", xmlnsManager);
-            moduleNode.SetAttribute("Name", webPart.Title);
+            moduleNode?.SetAttribute("Name", webPart.Title);
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
         }
 
         private void SetupFeatureXmlFile(
             SharePointProduct product,
-            SharePointWebPart webPart,
+            ISharePointEntryData webPart,
             string filePath)
         {
             var xmlDocument = new XmlDocument();
@@ -177,25 +226,56 @@
         }
 
         private void SetupRelsFeatureXmlFile(
-            SharePointWebPart webPart,
+            ISharePointEntryData webPart,
             string filePath,
-            int idCount)
+            int idCount,
+            ClientSideType clientSideType)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.Load(filePath);
             var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
             xmlnsManager.AddNamespace("ns", "http://schemas.openxmlformats.org/package/2006/relationships");
+            var mainRelationshipNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Relationships", xmlnsManager);
+            
             var partConfigurationNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Relationships/ns:Relationship[@Type='http://schemas.microsoft.com/sharepoint/2012/app/relationships/partconfiguration']", xmlnsManager);
             partConfigurationNode.SetAttribute("Target", $"/feature_{webPart.GuidId}.xml.config.xml");
-            partConfigurationNode.SetAttribute("Id", $"rf{2 * idCount}");
-            var elementManifestNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Relationships/ns:Relationship[@Type='http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest']", xmlnsManager);
-            elementManifestNode.SetAttribute("Target", $"/{webPart.GuidId}/WebPart_{webPart.GuidId}.xml");
-            elementManifestNode.SetAttribute("Id", $"rf{2 * idCount + 1}");
+            partConfigurationNode.SetAttribute("Id", $"rf{5 * idCount}");
+
+            if (clientSideType == ClientSideType.WebPart)
+            {
+                var newEntryNode = xmlDocument.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
+                newEntryNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest");
+                newEntryNode.SetAttribute("Target", $"/{webPart.GuidId}/WebPart_{webPart.GuidId}.xml");
+                newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 1}");
+                mainRelationshipNode.AppendChild(newEntryNode);
+            }
+
+            if (clientSideType == ClientSideType.ApplicationCustomizer)
+            {
+
+                var newEntryNode = xmlDocument.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
+                newEntryNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest");
+                newEntryNode.SetAttribute("Target", $"/{webPart.GuidId}/Extension_{webPart.GuidId}.xml");
+                newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 2}");
+                mainRelationshipNode.AppendChild(newEntryNode);
+
+                newEntryNode = xmlDocument.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
+                newEntryNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest");
+                newEntryNode.SetAttribute("Target", $"/{webPart.GuidId}/elements.xml");
+                newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 3}");
+                mainRelationshipNode.AppendChild(newEntryNode);
+
+                newEntryNode = xmlDocument.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
+                newEntryNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest");
+                newEntryNode.SetAttribute("Target", $"/{webPart.GuidId}/ClientSideInstance.xml");
+                newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 4}");
+                mainRelationshipNode.AppendChild(newEntryNode);
+            }
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
         }
 
-        private void AddEntryToAppManifestXmlFile(SharePointWebPart webPart, string filePath, string id)
+        private void AddEntryToAppManifestXmlFile(ISharePointEntryData webPart, string filePath, string id)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.Load(filePath);
@@ -211,6 +291,36 @@
 
             relationshipsNode.AppendChild(newEntryNode);
 
+            xmlDocument.PreserveWhitespace = true;
+            xmlDocument.Save(filePath);
+        }
+
+        private void SetupClientSideInstanceFile(
+            ISharePointEntryData webPart,
+            string filePath)
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(filePath);
+            var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
+            xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/");
+            var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:ClientSideComponentInstance", xmlnsManager);
+            node.SetAttribute("Title", webPart.Title);
+            node.SetAttribute("ComponentId", webPart.GuidId);
+            xmlDocument.PreserveWhitespace = true;
+            xmlDocument.Save(filePath);
+        }
+
+        private void SetupElementsFile(
+            ISharePointEntryData webPart,
+            string filePath)
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(filePath);
+            var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
+            xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/");
+            var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:CustomAction", xmlnsManager);
+            node.SetAttribute("Title", webPart.Title);
+            node.SetAttribute("ClientSideComponentId", webPart.GuidId);
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
         }

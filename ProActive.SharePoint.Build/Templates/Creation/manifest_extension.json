@@ -1,0 +1,24 @@
+{
+  "id": "{{__GuidId__}}",
+  "alias": "{{__NAME__}}Extension",
+  "componentType": "Extension",
+  "extensionType": "ApplicationCustomizer",
+  "version": "{{__VERSION__}}",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "loaderConfig": {
+    "entryModuleId": "{{__NAME__}}-extension",
+    "internalModuleBaseUrls": [ "HTTPS://SPCLIENTSIDEASSETLIBRARY/" ],
+    "scriptResources": {
+      "{{__NAME__}}-extension": {
+        "type": "path",
+        "path": "{{__FILENAME__}}"
+      },
+      "@microsoft/sp-application-base": {
+        "type": "component",
+        "version": "1.10.0",
+        "id": "4df9bb86-ab0a-4aab-ab5f-48bf167048fb"
+      }
+    }
+  }
+}

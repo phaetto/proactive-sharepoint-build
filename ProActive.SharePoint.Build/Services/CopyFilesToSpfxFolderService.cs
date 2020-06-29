@@ -34,8 +34,9 @@
             // Get all source files
             var sourceFiles = Directory.EnumerateFiles(sourceFolder, "*.*", SearchOption.AllDirectories)
                 .Where(x => Path.HasExtension(x))
-                .Where(x => !x.Equals(Files.WebPartProduct, StringComparison.InvariantCultureIgnoreCase))
-                .Where(x => applicationLoadContext.SharePointWebParts.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
+                .Where(x => !x.EndsWith(Files.WebPartProduct, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => applicationLoadContext.SharePointWebParts.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)))
+                .Where(x => applicationLoadContext.SharePointApplicationCustomizers.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
 
             // Open the client-side-assets xml file
             var clientSideAssetsXml = new XmlDocument();
@@ -75,11 +76,31 @@
             // TODO: Can't all entrypoints be like index.js? Do we have to provide the name?
             foreach (var webPart in applicationLoadContext.SharePointWebParts)
             {
-                ProcessJsMainModuleFile(relationshipsNode, clientSideAssetsXml, count, contentTemplateFilesFolder, Path.Combine(sourceFolder, webPart.EntryPointFileName), webPart);
+                ProcessJsMainModuleFile(
+                    relationshipsNode,
+                    clientSideAssetsXml,
+                    count,
+                    contentTemplateFilesFolder,
+                    Path.Combine(sourceFolder, webPart.EntryPointFileName),
+                    webPart,
+                    ClientSideType.WebPart);
 
                 ++count;
             }
 
+            foreach (var applicationCustomizer in applicationLoadContext.SharePointApplicationCustomizers)
+            {
+                ProcessJsMainModuleFile(
+                    relationshipsNode,
+                    clientSideAssetsXml,
+                    count,
+                    contentTemplateFilesFolder,
+                    Path.Combine(sourceFolder, applicationCustomizer.EntryPointFileName),
+                    applicationCustomizer,
+                    ClientSideType.ApplicationCustomizer);
+
+                ++count;
+            }
 
             clientSideAssetsXml.PreserveWhitespace = true;
             clientSideAssetsXml.Save(clientSideAssetsFileFullPath);
@@ -128,9 +149,16 @@
             }
         }
 
-        private void ProcessJsMainModuleFile(XmlNode relationshipsNode, XmlDocument clientSideAssetsXml, int count, string contentTemplateFilesFolder, string entrypointFileName, in SharePointWebPart sharePointWebPart)
+        private void ProcessJsMainModuleFile(XmlNode relationshipsNode, XmlDocument clientSideAssetsXml, int count, string contentTemplateFilesFolder, string entrypointFileName, in ISharePointEntryData sharePointWebPart, ClientSideType clientSideType)
         {
-            var mainModuleFileName = Path.Combine(contentTemplateFilesFolder, "module.main.js");
+            var moduleFile = clientSideType switch
+            {
+                ClientSideType.WebPart => Files.WebPartMainModuleFileName,
+                ClientSideType.ApplicationCustomizer => Files.ApplicationCustomizerMainModuleFileName,
+                _ => throw new NotImplementedException(),
+            };
+
+            var mainModuleFileName = Path.Combine(contentTemplateFilesFolder, moduleFile);
             var entryPointfileContent = File.ReadAllText(entrypointFileName);
             var mainModuleFileContent = File.ReadAllText(mainModuleFileName);
             var sanitizedName = TextManipulation.ToPascalCase(sharePointWebPart.Title);
@@ -164,8 +192,7 @@
                 directory += "_";
             }
             var fileWithoutExtension = $"{directory}{Path.GetFileNameWithoutExtension(fileName)}";
-            return fileWithoutExtension.Replace(Path.DirectorySeparatorChar, '_')
-                + extension;
+            return $"{fileWithoutExtension.Replace(Path.DirectorySeparatorChar, '_')}_{applicationLoadContext.UniqueBuildString}{extension}";
         }
     }
 }

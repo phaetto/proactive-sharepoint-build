@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build.Console", "ProActive.SharePoint.Build.Console\ProActive.SharePoint.Build.Console.csproj", "{1C58182A-C505-47A4-AA80-D61CE7EFD04D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build.Content", "ProActive.SharePoint.Build.Content\ProActive.SharePoint.Build.Content.csproj", "{7BBD7494-3620-4EEF-9CD0-49DFB4C4D4F3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProActive.SharePoint.Build.IntegrationTests", "ProActive.SharePoint.Build.IntegrationTests\ProActive.SharePoint.Build.IntegrationTests.csproj", "{7C12F9D4-6DBB-44DE-BB57-616380922C85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build.IntegrationTests", "ProActive.SharePoint.Build.IntegrationTests\ProActive.SharePoint.Build.IntegrationTests.csproj", "{7C12F9D4-6DBB-44DE-BB57-616380922C85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{1C58182A-C505-47A4-AA80-D61CE7EFD04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C58182A-C505-47A4-AA80-D61CE7EFD04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C58182A-C505-47A4-AA80-D61CE7EFD04D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BBD7494-3620-4EEF-9CD0-49DFB4C4D4F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BBD7494-3620-4EEF-9CD0-49DFB4C4D4F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BBD7494-3620-4EEF-9CD0-49DFB4C4D4F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BBD7494-3620-4EEF-9CD0-49DFB4C4D4F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C12F9D4-6DBB-44DE-BB57-616380922C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7C12F9D4-6DBB-44DE-BB57-616380922C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C12F9D4-6DBB-44DE-BB57-616380922C85}.Release|Any CPU.ActiveCfg = Release|Any CPU

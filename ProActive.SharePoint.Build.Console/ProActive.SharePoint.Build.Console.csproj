@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProActive.SharePoint.Build.Content\ProActive.SharePoint.Build.Content.csproj" />
     <ProjectReference Include="..\ProActive.SharePoint.Build\ProActive.SharePoint.Build.csproj" />
   </ItemGroup>
 

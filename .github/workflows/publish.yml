@@ -26,4 +26,4 @@ jobs:
     - name: Build packages
       run: dotnet pack --configuration Release
     - name: Publish packages
-      run: dotnet nuget push ./<project>/out/*.nupkg --skip-duplicate --no-symbols true
+      run: dotnet nuget push ./*/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}}

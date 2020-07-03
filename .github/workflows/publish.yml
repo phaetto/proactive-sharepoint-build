@@ -1,10 +1,9 @@
 name: .NET Core
 
 on:
+  commit_comment: [Publish]
   push:
-    branches: []
-  pull_request:
-    branches: []
+    branches: [ master ]
 
 jobs:
   buildAndPublish:

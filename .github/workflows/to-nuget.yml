@@ -23,8 +23,10 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Build packages
       run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}-alpha"
-    - name: Publish packages
-      run: dotnet nuget push **/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: Publish ProActive.SharePoint.Build
+      run: dotnet nuget push ./ProActive.SharePoint.Build/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: Publish ProActive.SharePoint.Build.Console
+      run: dotnet nuget push ./ProActive.SharePoint.Build.Console/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
   
   publish:
     if: "!github.event.release.prerelease"
@@ -44,5 +46,7 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Build packages
       run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}"
-    - name: Publish packages
-      run: dotnet nuget push **/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: Publish ProActive.SharePoint.Build
+      run: dotnet nuget push ./ProActive.SharePoint.Build/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: Publish ProActive.SharePoint.Build.Console
+      run: dotnet nuget push ./ProActive.SharePoint.Build.Console/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build", "Proactive.SharePoint.Build\ProActive.SharePoint.Build.csproj", "{9CB2A364-F9D1-4B4E-A3D7-1DF19C0CE56B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build", "ProActive.SharePoint.Build\ProActive.SharePoint.Build.csproj", "{9CB2A364-F9D1-4B4E-A3D7-1DF19C0CE56B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProActive.SharePoint.Build.Console", "ProActive.SharePoint.Build.Console\ProActive.SharePoint.Build.Console.csproj", "{1C58182A-C505-47A4-AA80-D61CE7EFD04D}"
 EndProject

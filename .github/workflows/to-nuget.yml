@@ -22,7 +22,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Build packages
-      run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}" --version-suffix alpha
+      run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}-alpha"
     - name: Publish packages
       run: dotnet nuget push ./*/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
   

@@ -28,7 +28,7 @@ jobs:
   
   publish:
     if: "!github.event.release.prerelease"
-    name: Publish Alpha
+    name: Publish Prod
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

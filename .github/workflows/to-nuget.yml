@@ -22,9 +22,9 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Build packages
-      run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}"
+      run: dotnet pack --configuration Release /p:Version="${{github.event.release.tag_name}}" --version-suffix alpha
     - name: Publish packages
-      run: dotnet nuget push ./*/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}} --version-suffix alpha
+      run: dotnet nuget push ./*/nupkg/*.nupkg --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_API_KEY}}
   
   publish:
     if: "!github.event.release.prerelease"

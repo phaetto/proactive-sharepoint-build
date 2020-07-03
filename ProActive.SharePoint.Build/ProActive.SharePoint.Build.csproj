@@ -1,7 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Authors>Alexander Mantzoukas (ama@proactive.dk)</Authors>
+    <Company>ProActive A/S</Company>
+    <Product>ProActive Tooling</Product>
+    <Description>Provides the tools to scaffold SPFx components without using nodejs.
+This gives the freedom to inject any kind of script in an SPFx without a framework (or packing a framework of your choice)</Description>
+    <Copyright>ProActive A/S, 2020</Copyright>
+    <RepositoryUrl>https://github.com/phaetto/proactive-sharepoint-build</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>SPFx, tooling, SharePoint</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

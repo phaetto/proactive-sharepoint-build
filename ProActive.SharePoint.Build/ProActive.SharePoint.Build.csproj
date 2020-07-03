@@ -11,6 +11,11 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
     <RepositoryUrl>https://github.com/phaetto/proactive-sharepoint-build</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>SPFx, tooling, SharePoint</PackageTags>
+    
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.1.0</Version>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,7 +65,7 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
     <None Update="Templates\Creation\[Content_Types].xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\Creation\_rels\.rels">
+    <None Update="Templates\Creation\_rels\dot_rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Creation\_rels\AppManifest.xml.rels">

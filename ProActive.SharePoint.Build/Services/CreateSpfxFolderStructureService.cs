@@ -109,7 +109,6 @@
             Directory.CreateDirectory(relsOutputDirectory);
             var nonRenamedRelsTemplateFiles = new string[]
             {
-                ".rels",
                 "ClientSideAssets.xml.rels",
                 "AppManifest.xml.rels",
             };
@@ -117,6 +116,8 @@
             {
                 File.Copy(Path.Combine(creationTemplateFolder, "_rels", templateFile), Path.Combine(relsOutputDirectory, templateFile));
             }
+
+            File.Copy(Path.Combine(creationTemplateFolder, "_rels", "dot_rels"), Path.Combine(relsOutputDirectory, ".rels"));
 
             var idCount = 1;
             var appManifestXmlFilePath = Path.Combine(relsOutputDirectory, "AppManifest.xml.rels");

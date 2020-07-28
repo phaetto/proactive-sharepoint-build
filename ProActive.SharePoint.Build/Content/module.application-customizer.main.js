@@ -20,9 +20,11 @@
         __extends(appCustomizerClass, _super);
 
         appCustomizerClass.prototype.onInit = function () {
-            /* {{__CODE__}} */
-            console.log("APPCUSTOMIZER: InstanceID: " + this.instanceId);
-            console.log("APPCUSTOMIZER: onInit");
+            (function (appCustomizer) {
+                try {
+                    {{__CODE__}}
+                } catch (e) { console.error(e); };
+            })(this);
 
             return Promise.resolve();
         };

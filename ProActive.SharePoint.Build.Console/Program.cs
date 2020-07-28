@@ -6,16 +6,17 @@
     using System;
     using System.IO;
     using System.IO.Compression;
+    using ProActive.SharePoint.Build.Console.Services;
 
     internal class Program
     {
         private const string Intro = @"
 
-███████ ██████  ███████ ██   ██     ██████  ██    ██ ██ ██      ██████  ███████ ██████  
-██      ██   ██ ██       ██ ██      ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
-███████ ██████  █████     ███       ██████  ██    ██ ██ ██      ██   ██ █████   ██████  
-     ██ ██      ██       ██ ██      ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
-███████ ██      ██      ██   ██     ██████   ██████  ██ ███████ ██████  ███████ ██   ██ 
+  ███████ ██████  ███████ ██   ██     ██████  ██    ██ ██ ██      ██████  ███████ ██████  
+  ██      ██   ██ ██       ██ ██      ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
+  ███████ ██████  █████     ███       ██████  ██    ██ ██ ██      ██   ██ █████   ██████  
+       ██ ██      ██       ██ ██      ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██ 
+  ███████ ██      ██      ██   ██     ██████   ██████  ██ ███████ ██████  ███████ ██   ██ 
                                                                                         
 ";
 
@@ -25,8 +26,10 @@
             ConsoleExtensions.WriteLineWithColor("\tfor SharePoint Online!", ConsoleColor.Cyan);
             ConsoleExtensions.WriteLineWithColor("\n\n\tMade with <3 from ProActive - Contact: ama@proactive.dk\n\n", ConsoleColor.Cyan);
 
-            Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(o =>
+            var parser = new Parser(with => with.HelpWriter = Console.Out);
+            var parserResult = parser.ParseArguments<EmbedOptions, PackOptions, UploadOptions>(args);
+            _ = parserResult
+                .WithParsed<PackOptions>(o =>
                 {
                     string sourceFolder = o.SourceFolder;
                     string debugFolder = o.DebugFolder ?? Path.GetFullPath(Path.Combine(".", "dist", "debug"));
@@ -48,7 +51,7 @@
                     Console.WriteLine("Creating artifacts...");
 
                     // TODO: move content to argument
-                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, debugFolder, Path.GetFullPath(Path.Combine(".", "Content")),  applicationLoadContext);
+                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, debugFolder, Path.GetFullPath(Path.Combine(".", "Content")), applicationLoadContext);
                     copyFilesToSpfxFolder.Process();
                     ConsoleExtensions.WriteLineWithColor("Done!", ConsoleColor.Green);
 
@@ -63,10 +66,22 @@
 
                     ConsoleExtensions.WriteLineWithColor("Done!", ConsoleColor.Green);
                 })
-                .WithNotParsed(errs =>
+                .WithParsed<EmbedOptions>(o =>
                 {
-                    // TODO: errs
-                    ConsoleExtensions.WriteLineWithColor("Invalid arguments.", ConsoleColor.Yellow);
+                    // TODO: use direct input and create an spfx
+                })
+                // TODO: Init?
+                .WithParsed<UploadOptions>(o =>
+                {
+                    Console.WriteLine("Uploading...");
+
+                    var uploadAndDeployAppService = new UploadAndDeployAppService(o.SpfxFilePath, o.TenantName, o.ClientId, o.ClientSecret, o.SkipFeatureDeployment);
+                    uploadAndDeployAppService.Process();
+
+                    ConsoleExtensions.WriteLineWithColor("Done!", ConsoleColor.Green);
+                })
+                .WithNotParsed(errors =>
+                {
                 });
         }
     }

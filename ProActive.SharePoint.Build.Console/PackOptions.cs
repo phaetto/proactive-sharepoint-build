@@ -2,9 +2,10 @@
 {
     using CommandLine;
 
-    public class Options
+    [Verb("pack", HelpText = "Creates an spfx file from folders in disc.")]
+    public class PackOptions
     {
-        [Option('s', "source-folder", Required = true, HelpText = "Sets the source folder of a published Blazor application")]
+        [Option('s', "source-folder", Required = true, HelpText = "Sets the source folder of web resource files (html, js, css)")]
         public string SourceFolder { get; set; }
 
         [Option('f', "spfx-folder", Required = true, HelpText = "Sets folder that the spfx zip package will be generated")]

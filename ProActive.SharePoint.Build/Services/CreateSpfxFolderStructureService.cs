@@ -28,7 +28,6 @@
             // Create the basic folder structure
             var nonRenamedtemplateFiles = new string[]
             {
-                "[Content_Types].xml",
                 "AppManifest.xml",
                 "ClientSideAssets.xml",
                 "ClientSideAssets.xml.config.xml",
@@ -37,6 +36,9 @@
             {
                 File.Copy(Path.Combine(creationTemplateFolder, templateFile), Path.Combine(spfxOutputFolder, templateFile));
             }
+
+            // Copy [Content_Types] file and rename
+            File.Copy(Path.Combine(creationTemplateFolder, "bracket_Content_Types_bracket.xml"), Path.Combine(spfxOutputFolder, "[Content_Types].xml"));
 
             // Setup app manifest
             SetupAppManifest(applicationLoadContext.SharePointProduct, Path.Combine(spfxOutputFolder, "AppManifest.xml"));

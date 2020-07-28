@@ -93,7 +93,7 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
-    <None Update="Templates\Creation\[Content_Types].xml">
+    <None Update="Templates\Creation\bracket_Content_Types_bracket.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>

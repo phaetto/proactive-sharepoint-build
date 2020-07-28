@@ -23,59 +23,98 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ProActive.SharePoint.Build.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
     <None Update="Content\module.application-customizer.main.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Content\module.webpart.main.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\AppManifest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\ClientSideAssets.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\ClientSideAssets.xml.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\Extension\Elements.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\Extension\ClientSideInstance.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\feature_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\feature_ID.xml.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\manifest_extension.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\Extension\Extension_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\WebPart\WebPart_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\[Content_Types].xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Templates\Creation\_rels\dot_rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\_rels\AppManifest.xml.rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\_rels\ClientSideAssets.xml.rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\_rels\feature_ID.xml.rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
   </ItemGroup>
 

@@ -95,6 +95,8 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
     </None>
     <None Update="Templates\Creation\[Content_Types].xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
     <None Update="Templates\Creation\_rels\dot_rels">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

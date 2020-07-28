@@ -8,7 +8,7 @@ jobs:
   publish-alpha:
     if: "github.event.release.prerelease"
     name: Publish Alpha
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -31,7 +31,7 @@ jobs:
   publish:
     if: "!github.event.release.prerelease"
     name: Publish Prod
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core

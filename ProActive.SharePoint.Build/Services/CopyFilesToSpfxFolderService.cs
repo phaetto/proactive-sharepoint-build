@@ -60,7 +60,7 @@
             }
 
             var sourceFilesArray = sourceFiles.ToArray();
-            
+
             // Process new files
 
             var count = 1;
@@ -110,7 +110,7 @@
         {
             if (string.IsNullOrWhiteSpace(targetFilename))
             {
-                targetFilename = EscapeFile(Path.GetRelativePath(sourceFolder, file));
+                targetFilename = EscapeFile(MakeRelativePath(sourceFolder, file));
             }
             var newFilePath = Path.Combine(spfxOutputFolder, "ClientSideAssets", targetFilename);
 
@@ -129,7 +129,7 @@
         {
             foreach (var cssFile in sourceFiles.Where(x => Path.GetExtension(x) == ".css"))
             {
-                var targetCssFilename = EscapeFile(Path.GetRelativePath(rootDirectory, cssFile));
+                var targetCssFilename = EscapeFile(MakeRelativePath(rootDirectory, cssFile));
                 var targetCssFilePath = Path.Combine(spfxOutputFolder, "ClientSideAssets", targetCssFilename);
                 var cssText = File.ReadAllText(targetCssFilePath);
                 var matches = Regex.Matches(cssText, "url\\((?!['\"]?(?:data|http):)['\"]?([^'\"\\)]*)['\"]?\\)", RegexOptions.Multiline | RegexOptions.CultureInvariant);
@@ -138,9 +138,9 @@
                     foreach (Match match in matches)
                     {
                         var cssDirectory = Path.GetDirectoryName(cssFile);
-                        var relativeToSourcePath = Path.GetRelativePath(rootDirectory, cssDirectory);
+                        var relativeToSourcePath = MakeRelativePath(rootDirectory, cssDirectory);
                         var fullPathToCssUrlFile = Path.GetFullPath(Path.Combine(cssDirectory, match.Groups[1].Value));
-                        var urlResourceEscapedFilename = EscapeFile(Path.GetRelativePath(rootDirectory, fullPathToCssUrlFile));
+                        var urlResourceEscapedFilename = EscapeFile(MakeRelativePath(rootDirectory, fullPathToCssUrlFile));
                         cssText = cssText.Replace(match.Groups[1].Value, urlResourceEscapedFilename);
                     }
 
@@ -151,12 +151,18 @@
 
         private void ProcessJsMainModuleFile(XmlNode relationshipsNode, XmlDocument clientSideAssetsXml, int count, string contentTemplateFilesFolder, string entrypointFileName, in ISharePointEntryData sharePointWebPart, ClientSideType clientSideType)
         {
-            var moduleFile = clientSideType switch
+            string moduleFile;
+            switch (clientSideType)
             {
-                ClientSideType.WebPart => Files.WebPartMainModuleFileName,
-                ClientSideType.ApplicationCustomizer => Files.ApplicationCustomizerMainModuleFileName,
-                _ => throw new NotImplementedException(),
-            };
+                case ClientSideType.WebPart:
+                    moduleFile = Files.WebPartMainModuleFileName;
+                    break;
+                case ClientSideType.ApplicationCustomizer:
+                    moduleFile = Files.ApplicationCustomizerMainModuleFileName;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
             var mainModuleFileName = Path.Combine(contentTemplateFilesFolder, moduleFile);
             var entryPointfileContent = File.ReadAllText(entrypointFileName);
@@ -193,6 +199,27 @@
             }
             var fileWithoutExtension = $"{directory}{Path.GetFileNameWithoutExtension(fileName)}";
             return $"{fileWithoutExtension.Replace(Path.DirectorySeparatorChar, '_')}_{applicationLoadContext.UniqueBuildString}{extension}";
+        }
+
+        private string MakeRelativePath(string fromPath, string toPath)
+        {
+            var fromUri = new Uri(fromPath);
+            var toUri = new Uri(toPath);
+
+            if (fromUri.Scheme != toUri.Scheme)
+            {
+                return toPath;
+            }
+
+            var relativeUri = fromUri.MakeRelativeUri(toUri);
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+            {
+                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+
+            return relativePath;
         }
     }
 }

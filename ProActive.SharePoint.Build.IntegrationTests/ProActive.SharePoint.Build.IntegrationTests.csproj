@@ -29,7 +29,7 @@
     <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\index.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\webpart.product.json">
+    <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Source\product.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Target\empty-file.txt">
@@ -41,7 +41,7 @@
     <None Update="Artifacts\EndToEnd\Webpart\Source\index.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Artifacts\EndToEnd\Webpart\Source\webpart.product.json">
+    <None Update="Artifacts\EndToEnd\Webpart\Source\product.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Artifacts\EndToEnd\Webpart\Target\empty-file.txt">

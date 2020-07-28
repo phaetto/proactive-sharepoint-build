@@ -1,5 +1,3 @@
-﻿(function (webPart) {
-    console.log("Awesome function (No. 1)");
-
-    webPart.domElement.innerHTML = "Awesome function (No. 1)";
-})(webPart);
+﻿(function (appCustomizer) {
+    console.log("Awesome app customizer (No. 1)");
+})(appCustomizer);

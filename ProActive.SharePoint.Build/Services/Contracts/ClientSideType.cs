@@ -4,5 +4,6 @@
     {
         WebPart,
         ApplicationCustomizer,
+        Library,
     }
 }

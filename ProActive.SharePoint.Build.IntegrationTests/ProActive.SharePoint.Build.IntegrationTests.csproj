@@ -35,6 +35,18 @@
     <None Update="Artifacts\EndToEnd\ApplicationCustomizer\Target\empty-file.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Artifacts\EndToEnd\Library\Source\index-2.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Library\Source\index.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Library\Source\product.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Artifacts\EndToEnd\Library\Target\empty-file.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Artifacts\EndToEnd\Webpart\Source\index-2.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

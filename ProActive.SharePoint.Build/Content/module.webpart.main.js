@@ -1,4 +1,4 @@
-define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], function (__microsoft_sp_webpart_base__) {
+define("{{__GUID_ID__}}_{{__VERSION__}}", [{{__LIBRARIES__}}], function (__microsoft_sp_webpart_base__) {
     var _super = __microsoft_sp_webpart_base__["BaseClientSideWebPart"];
 
     var __extends = (undefined && undefined.__extends) || (function () {
@@ -12,6 +12,8 @@ define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], functi
         };
     })();
 
+    var __deps = arguments;
+
     var webPart = /** @class */ (function () {
         function webPartClass() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -22,11 +24,11 @@ define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-webpart-base"], functi
         webPartClass.prototype.render = function () {
             this.domElement.innerHTML = " "; // Important: must always have something
 
-            (function (webPart) {
+            (function (webPart, deps) {
                 try {
                     {{__CODE__}}
-                } catch (e) { console.error(e); };
-            })(this);
+                } catch (e) { console.error(e); throw e; };
+            })(this, __deps);
         };
 
         return webPartClass;

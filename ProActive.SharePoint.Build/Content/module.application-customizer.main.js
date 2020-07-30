@@ -1,4 +1,4 @@
-﻿define("{{__GUID_ID__}}_{{__VERSION__}}", ["@microsoft/sp-application-base"], function (__microsoft_sp_webpart_base__) {
+﻿define("{{__GUID_ID__}}_{{__VERSION__}}", [{{__LIBRARIES__}}], function (__microsoft_sp_webpart_base__) {
     var _super = __microsoft_sp_webpart_base__["BaseApplicationCustomizer"];
 
     var __extends = (undefined && undefined.__extends) || (function () {
@@ -12,6 +12,8 @@
         };
     })();
 
+    var __deps = arguments;
+
     var appCustomizer = /** @class */ (function () {
         function appCustomizerClass() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -20,11 +22,11 @@
         __extends(appCustomizerClass, _super);
 
         appCustomizerClass.prototype.onInit = function () {
-            (function (appCustomizer) {
+            (function (appCustomizer, deps) {
                 try {
                     {{__CODE__}}
-                } catch (e) { console.error(e); };
-            })(this);
+                } catch (e) { console.error(e); throw e; };
+            })(this, __deps);
 
             return Promise.resolve();
         };

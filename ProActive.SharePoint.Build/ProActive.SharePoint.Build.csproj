@@ -23,6 +23,11 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\module.library.main.js">
+      <PackagePath>build</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+    </None>
     <None Update="ProActive.SharePoint.Build.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
@@ -73,6 +78,11 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
+    <None Update="Templates\Creation\manifest_library.json">
+      <PackagePath>build</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+    </None>
     <None Update="Templates\Creation\manifest_extension.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
@@ -87,6 +97,11 @@ This gives the freedom to inject any kind of script in an SPFx without a framewo
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
+    </None>
+    <None Update="Templates\Creation\Library\Library_ID.xml">
+      <PackagePath>build</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
     </None>
     <None Update="Templates\Creation\WebPart\WebPart_ID.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public sealed class SharePointApplicationCustomizer : ISharePointEntryData
+    public sealed class SharePointLibrary : ISharePointEntryData
     {
         public Guid GuidId { get; set; }
         public string Title { get; set; }

@@ -1,16 +1,14 @@
 {
   "id": "{{__GuidId__}}",
-  "alias": "{{__NAME__}}Extension",
-  "componentType": "Extension",
-  "extensionType": "ApplicationCustomizer",
+  "alias": "{{__NAME__}}Library",
+  "componentType": "Library",
   "version": "{{__VERSION__}}",
   "manifestVersion": 2,
-  "requiresCustomScript": false,
   "loaderConfig": {
-    "entryModuleId": "{{__NAME__}}-extension",
+    "entryModuleId": "{{__NAME__}}-library",
     "internalModuleBaseUrls": [ "HTTPS://SPCLIENTSIDEASSETLIBRARY/" ],
     "scriptResources": {
-      "{{__NAME__}}-extension": {
+      "{{__NAME__}}-library": {
         "type": "path",
         "path": "{{__FILENAME__}}"
       }

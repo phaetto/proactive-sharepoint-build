@@ -1,11 +1,12 @@
-﻿using System;
-
-namespace ProActive.SharePoint.Build.Services.Contracts
+﻿namespace ProActive.SharePoint.Build.Services.Contracts
 {
+    using System;
+
     public sealed class SharePointProduct
     {
-        public string GuidId { get; set; }
+        public Guid GuidId { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
+        public bool TenantWideInstallation { get; set; }
     }
 }

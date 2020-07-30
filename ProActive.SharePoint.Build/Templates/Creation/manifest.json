@@ -32,12 +32,8 @@
       "{{__NAME__}}-web-part": {
         "type": "path",
         "path": "{{__FILENAME__}}"
-      },
-      "@microsoft/sp-webpart-base": {
-        "type": "component",
-        "version": "1.9.1",
-        "id": "974a7777-0990-4136-8fa6-95d80114c2e0"
       }
+      {{__LIBRARIES__}}
     }
   }
 }

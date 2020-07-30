@@ -4,6 +4,9 @@
     using ProActive.SharePoint.Build.Services.Contracts;
     using System;
     using System.IO;
+    using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Xml;
 
     public sealed class CreateSpfxFolderStructureService
@@ -58,7 +61,7 @@
                 SetupFeatureXmlConfigFile(featureXmlConfigXmlFilePath);
 
                 // Setup WebPart folder
-                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, webPart.GuidId);
+                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, webPart.GuidId.ToString());
                 Directory.CreateDirectory(webPartOutputDirectory);
                 var webPartFilePath = Path.Combine(webPartOutputDirectory, $"WebPart_{webPart.GuidId}.xml");
                 File.Copy(Path.Combine(creationTemplateFolder, "WebPart", "WebPart_ID.xml"), webPartFilePath);
@@ -82,7 +85,7 @@
                 SetupFeatureXmlConfigFile(featureXmlConfigXmlFilePath);
 
                 // Setup Extension folder
-                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, applicationCustomizer.GuidId);
+                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, applicationCustomizer.GuidId.ToString());
                 Directory.CreateDirectory(webPartOutputDirectory);
                 var webPartFilePath = Path.Combine(webPartOutputDirectory, $"Extension_{applicationCustomizer.GuidId}.xml");
                 File.Copy(Path.Combine(creationTemplateFolder, "Extension", "Extension_ID.xml"), webPartFilePath);
@@ -104,6 +107,30 @@
                 SetupElementsFile(
                     applicationCustomizer,
                     elementsFilePath);
+            }
+
+            foreach (var library in applicationLoadContext.SharePointLibraries)
+            {
+                var jsonManifest = GenerateManifestJson(library, Path.Combine(creationTemplateFolder, "manifest_library.json"));
+
+                // Setup features
+                var featureXmlFilePath = Path.Combine(spfxOutputFolder, $"feature_{library.GuidId}.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "feature_ID.xml"), featureXmlFilePath);
+                SetupFeatureXmlFile(applicationLoadContext.SharePointProduct, library, featureXmlFilePath);
+
+                var featureXmlConfigXmlFilePath = Path.Combine(spfxOutputFolder, $"feature_{library.GuidId}.xml.config.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "feature_ID.xml.config.xml"), featureXmlConfigXmlFilePath);
+                SetupFeatureXmlConfigFile(featureXmlConfigXmlFilePath);
+
+                // Setup WebPart folder
+                var webPartOutputDirectory = Path.Combine(spfxOutputFolder, library.GuidId.ToString());
+                Directory.CreateDirectory(webPartOutputDirectory);
+                var webPartFilePath = Path.Combine(webPartOutputDirectory, $"Library_{library.GuidId}.xml");
+                File.Copy(Path.Combine(creationTemplateFolder, "Library", "Library_ID.xml"), webPartFilePath);
+                SetupWebpartFile(
+                    library,
+                    webPartFilePath,
+                    jsonManifest);
             }
 
             // Setup .rels folder
@@ -143,6 +170,16 @@
                 ++idCount;
             }
 
+            foreach (var library in applicationLoadContext.SharePointLibraries)
+            {
+                var featureRelsXmlFilePath = Path.Combine(relsOutputDirectory, $"feature_{library.GuidId}.xml.rels");
+                File.Copy(Path.Combine(creationTemplateFolder, "_rels", "feature_ID.xml.rels"), featureRelsXmlFilePath);
+                SetupRelsFeatureXmlFile(library, featureRelsXmlFilePath, idCount, ClientSideType.Library);
+
+                AddEntryToAppManifestXmlFile(library, appManifestXmlFilePath, $"rel{idCount}");
+                ++idCount;
+            }
+
             Directory.CreateDirectory(Path.Combine(spfxOutputFolder, "ClientSideAssets"));
         }
 
@@ -153,9 +190,15 @@
             var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
             xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/2012/app/manifest");
             var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:App", xmlnsManager);
-            node.SetAttribute("ProductID", product.GuidId);
+            node.SetAttribute("ProductID", product.GuidId.ToString());
             node.SetAttribute("Version", product.Version);
             node.SetAttribute("Name", product.Name);
+
+            if (product.TenantWideInstallation)
+            {
+                node.SetAttribute("SkipFeatureDeployment", "true");
+            }
+
             var titleNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:App/ns:Properties/ns:Title", xmlnsManager);
             titleNode.InnerText = product.Name;
             xmlDocument.PreserveWhitespace = true;
@@ -167,16 +210,30 @@
             var manifestFileContents = File.ReadAllText(templateFilePath);
             var sanitizedName = TextManipulation.ToPascalCase(webPart.Title);
             return manifestFileContents // TODO: do it properly with a JSON serializer
-                .Replace("{{__GuidId__}}", webPart.GuidId)
+                .Replace("{{__GuidId__}}", webPart.GuidId.ToString())
                 .Replace("{{__Title__}}", webPart.Title)
                 .Replace("{{__Description__}}", webPart.Description)
                 .Replace("{{__FILENAME__}}", $"{Path.GetFileNameWithoutExtension(webPart.EntryPointFileName)}_{applicationLoadContext.UniqueBuildString}.js")
                 .Replace("{{__NAME__}}", sanitizedName)
                 .Replace("{{__VERSION__}}", webPart.Version)
+                .Replace("{{__LIBRARIES__}}", GenerateLibrariesJson(webPart.Dependencies))
                 .Replace("\n", "")
                 .Replace("\r", "")
                 .Trim();
             // TODO: change the rest of the file (ids, etc)
+        }
+
+        private string GenerateLibrariesJson(SharePointDependency[] dependencies)
+        {
+            if ((dependencies?.Length ?? 0) == 0)
+            {
+                return string.Empty;
+            }
+
+            var dependenciesJsonText = dependencies
+                .Select(x => $@"""{x.Name}"": {{ id: ""{x.Id}"", version: ""{x.Version}"", type: ""component"" }}");
+
+            return "," + string.Join(", ", dependenciesJsonText);
         }
 
         private void SetupWebpartFile(
@@ -189,7 +246,7 @@
             var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
             xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/");
             var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:ClientSideComponent", xmlnsManager);
-            node.SetAttribute("Id", webPart.GuidId);
+            node.SetAttribute("Id", webPart.GuidId.ToString());
             node.SetAttribute("Name", webPart.Title);
             node.SetAttribute("ComponentManifest", jsonComponentManifest);
             var moduleNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:Module", xmlnsManager);
@@ -210,7 +267,7 @@
             var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Feature", xmlnsManager);
             node.SetAttribute("Title", $"{webPart.Title} Feature");
             node.SetAttribute("Description", $"A feature which activates the Client-Side WebPart named {webPart.Title}");
-            node.SetAttribute("Id", webPart.GuidId);
+            node.SetAttribute("Id", webPart.GuidId.ToString());
             node.SetAttribute("Version", product.Version); // Not sure why this is not the web part version, but that's how it's generated
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
@@ -239,7 +296,7 @@
             var xmlnsManager = new XmlNamespaceManager(xmlDocument.NameTable);
             xmlnsManager.AddNamespace("ns", "http://schemas.openxmlformats.org/package/2006/relationships");
             var mainRelationshipNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Relationships", xmlnsManager);
-            
+
             var partConfigurationNode = (XmlElement)xmlDocument.SelectSingleNode("/ns:Relationships/ns:Relationship[@Type='http://schemas.microsoft.com/sharepoint/2012/app/relationships/partconfiguration']", xmlnsManager);
             partConfigurationNode.SetAttribute("Target", $"/feature_{webPart.GuidId}.xml.config.xml");
             partConfigurationNode.SetAttribute("Id", $"rf{5 * idCount}");
@@ -274,6 +331,16 @@
                 newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 4}");
                 mainRelationshipNode.AppendChild(newEntryNode);
             }
+
+            if (clientSideType == ClientSideType.Library)
+            {
+                var newEntryNode = xmlDocument.CreateElement("Relationship", "http://schemas.openxmlformats.org/package/2006/relationships");
+                newEntryNode.SetAttribute("Type", "http://schemas.microsoft.com/sharepoint/2012/app/relationships/feature-elementmanifest");
+                newEntryNode.SetAttribute("Target", $"/{webPart.GuidId}/Library_{webPart.GuidId}.xml");
+                newEntryNode.SetAttribute("Id", $"rf{5 * idCount + 1}");
+                mainRelationshipNode.AppendChild(newEntryNode);
+            }
+
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
         }
@@ -308,7 +375,7 @@
             xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/");
             var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:ClientSideComponentInstance", xmlnsManager);
             node.SetAttribute("Title", webPart.Title);
-            node.SetAttribute("ComponentId", webPart.GuidId);
+            node.SetAttribute("ComponentId", webPart.GuidId.ToString());
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
         }
@@ -323,9 +390,25 @@
             xmlnsManager.AddNamespace("ns", "http://schemas.microsoft.com/sharepoint/");
             var node = (XmlElement)xmlDocument.SelectSingleNode("/ns:Elements/ns:CustomAction", xmlnsManager);
             node.SetAttribute("Title", webPart.Title);
-            node.SetAttribute("ClientSideComponentId", webPart.GuidId);
+            node.SetAttribute("ClientSideComponentId", webPart.GuidId.ToString());
             xmlDocument.PreserveWhitespace = true;
             xmlDocument.Save(filePath);
+        }
+
+        private sealed class SharePointJsonDependency
+        {
+            [JsonPropertyName("id")]
+            public Guid Id { get; set; }
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
+            [JsonPropertyName("type")]
+            public string Type { get; set; } = "component"; // path, localizedPath, component
+            [JsonPropertyName("version")]
+            public string Version { get; set; }
+            [JsonPropertyName("path")]
+            public string Path { get; set; }
+            [JsonPropertyName("defaultPath")]
+            public string DefaultPath { get; set; }
         }
     }
 }

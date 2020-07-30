@@ -1,0 +1,27 @@
+{
+  "SharePointProduct": {
+    "GuidId": "BD46CCD1-CDCB-4A4D-85E5-7613DD123683",
+    "Name": "Integration tests SPFx Library",
+    "Version": "0.0.0.2"
+  },
+  "SharePointWebParts": [],
+  "SharePointApplicationCustomizers": [],
+  "SharePointLibraries": [
+    {
+      "GuidId": "7A83CD7C-DDEC-4897-B796-79388D217D52",
+      "Title": "Test Library #1",
+      "Description": "Test Library #1",
+      "Version": "0.0.0.2",
+      "EntryPointFileName": "index.js",
+      "Dependencies": [
+      ]
+    },
+    {
+      "GuidId": "5E45F3D8-2C34-49E6-A786-BC08D09DD2D0",
+      "Title": "Test Library #2",
+      "Description": "Test Library #2",
+      "Version": "0.0.0.2",
+      "EntryPointFileName": "index-2.js"
+    }
+  ]
+}

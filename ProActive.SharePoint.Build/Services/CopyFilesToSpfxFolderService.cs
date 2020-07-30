@@ -36,7 +36,8 @@
                 .Where(x => Path.HasExtension(x))
                 .Where(x => !x.EndsWith(Files.WebPartProduct, StringComparison.InvariantCultureIgnoreCase))
                 .Where(x => applicationLoadContext.SharePointWebParts.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)))
-                .Where(x => applicationLoadContext.SharePointApplicationCustomizers.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
+                .Where(x => applicationLoadContext.SharePointApplicationCustomizers.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)))
+                .Where(x => applicationLoadContext.SharePointLibraries.All(y => !Path.GetFileName(x).Equals(y.EntryPointFileName, StringComparison.InvariantCultureIgnoreCase)));
 
             // Open the client-side-assets xml file
             var clientSideAssetsXml = new XmlDocument();
@@ -102,6 +103,20 @@
                 ++count;
             }
 
+            foreach (var library in applicationLoadContext.SharePointLibraries)
+            {
+                ProcessJsMainModuleFile(
+                    relationshipsNode,
+                    clientSideAssetsXml,
+                    count,
+                    contentTemplateFilesFolder,
+                    Path.Combine(sourceFolder, library.EntryPointFileName),
+                    library,
+                    ClientSideType.Library);
+
+                ++count;
+            }
+
             clientSideAssetsXml.PreserveWhitespace = true;
             clientSideAssetsXml.Save(clientSideAssetsFileFullPath);
         }
@@ -160,6 +175,9 @@
                 case ClientSideType.ApplicationCustomizer:
                     moduleFile = Files.ApplicationCustomizerMainModuleFileName;
                     break;
+                case ClientSideType.Library:
+                    moduleFile = Files.LibraryMainModuleFileName;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -170,10 +188,14 @@
             var sanitizedName = TextManipulation.ToPascalCase(sharePointWebPart.Title);
             // TODO: use JSON schema to genrate the classes
             mainModuleFileContent = mainModuleFileContent
-                .Replace("{{__GUID_ID__}}", sharePointWebPart.GuidId)
+                .Replace("{{__GUID_ID__}}", sharePointWebPart.GuidId.ToString())
                 .Replace("{{__VERSION__}}", sharePointWebPart.Version)
                 .Replace("{{__NAME__}}", sanitizedName)
-                .Replace("{{__CODE__}}", entryPointfileContent);
+                .Replace("{{__CODE__}}", entryPointfileContent)
+                .Replace("{{__LIBRARIES__}}", sharePointWebPart.Dependencies != null
+                    ? string.Join(", ", sharePointWebPart.Dependencies.Select(x => $"\"{x.Name}\""))
+                    : string.Empty
+                );
 
             var newFileName = $"{Path.GetFileNameWithoutExtension(sharePointWebPart.EntryPointFileName)}_{applicationLoadContext.UniqueBuildString}.js";
             var newFilePath = CopyFileAndAddToXmlRel(relationshipsNode, clientSideAssetsXml, count, entrypointFileName, newFileName);

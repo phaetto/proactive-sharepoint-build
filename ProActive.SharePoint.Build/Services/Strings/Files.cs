@@ -6,5 +6,6 @@
         public const string WebPartProduct = "product.json";
         public const string WebPartMainModuleFileName = "module.webpart.main.js";
         public const string ApplicationCustomizerMainModuleFileName = "module.application-customizer.main.js";
+        public const string LibraryMainModuleFileName = "module.library.main.js";
     }
 }

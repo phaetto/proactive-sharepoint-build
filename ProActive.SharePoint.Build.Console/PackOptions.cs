@@ -8,7 +8,7 @@
         [Option('s', "source-folder", Required = true, HelpText = "Sets the source folder of web resource files (html, js, css)")]
         public string SourceFolder { get; set; }
 
-        [Option('f', "spfx-folder", Required = true, HelpText = "Sets folder that the spfx zip package will be generated")]
+        [Option('f', "spfx-folder", Required = false, HelpText = "Sets folder that the spfx zip package will be generated")]
         public string SpfxFolder { get; set; }
 
         [Option('d', "debug-folder", Required = false, HelpText = "Sets the debug folder that the spfx component will be generated. Defaults to ./dist/debug.")]

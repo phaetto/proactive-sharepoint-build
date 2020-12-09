@@ -12,7 +12,7 @@ Install the command line tool by using the following:
 You can now generate an spfx:
 - `proactive-sharepoint-build init --name MyWidget --webpart`
 - _Edit your js in MyWidget/index.js_
-- `proactive-sharepoint-build pack --source-folder MyWidget --spfx-folder .`
+- `proactive-sharepoint-build pack --source-folder MyWidget`
  
 At this point file MyWidget.sppkg has been generated. Upload it to your tenant.
 

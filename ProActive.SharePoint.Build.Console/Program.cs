@@ -8,6 +8,7 @@
     using System.IO.Compression;
     using ProActive.SharePoint.Build.Services.Contracts;
     using System.Text.Json;
+    using System.Reflection;
 
     internal class Program
     {
@@ -33,12 +34,13 @@
             _ = parserResult
                 .WithParsed<PackOptions>(o =>
                 {
-                    string sourceFolder = o.SourceFolder;
-                    string debugFolder = o.DebugFolder ?? Path.GetFullPath(Path.Combine(".", "dist", "debug"));
-                    string creationTemplatesFolder = string.IsNullOrWhiteSpace(o.TemplatesFolder)
-                        ? Path.GetFullPath(Path.Combine(".", "Templates", "Creation"))
+                    var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var sourceFolder = o.SourceFolder;
+                    var debugFolder = o.DebugFolder ?? Path.GetFullPath(Path.Combine(".", "dist", "debug"));
+                    var creationTemplatesFolder = string.IsNullOrWhiteSpace(o.TemplatesFolder)
+                        ? Path.GetFullPath(Path.Combine(assemblyFolder, "Templates", "Creation"))
                         : Path.GetFullPath(o.TemplatesFolder);
-                    string sspkgFolder = o.SpfxFolder ?? Path.GetFullPath(".");
+                    var sspkgFolder = o.SpfxFolder ?? Path.GetFullPath(".");
 
                     // Initialize environment
                     var initSpfxFolderStructure = new InitSpfxFolderStructureService(sourceFolder, debugFolder);
@@ -53,7 +55,7 @@
                     Console.WriteLine("Creating artifacts...");
 
                     // TODO: move content to argument
-                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, debugFolder, Path.GetFullPath(Path.Combine(".", "Content")), applicationLoadContext);
+                    var copyFilesToSpfxFolder = new CopyFilesToSpfxFolderService(sourceFolder, debugFolder, Path.GetFullPath(Path.Combine(assemblyFolder, "Content")), applicationLoadContext);
                     copyFilesToSpfxFolder.Process();
                     ConsoleExtensions.WriteLineWithColor("Done!", ConsoleColor.Green);
 

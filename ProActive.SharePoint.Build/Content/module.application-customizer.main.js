@@ -25,7 +25,7 @@
             (function (appCustomizer, deps) {
                 try {
                     {{__CODE__}}
-                } catch (e) { console.error(e); throw e; };
+                } catch (e) { console.error("ProActive.SharePoint.Build/ApplicationCustomizer: JS code error"); console.error(e); throw e; };
             })(this, __deps);
 
             return Promise.resolve();
